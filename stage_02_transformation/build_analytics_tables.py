@@ -42,3 +42,25 @@ def build_active_customers(df: pd.DataFrame) -> pd.DataFrame:
         .reset_index()
         .sort_values('InvoiceDate')
     )
+
+def apply_transformations(data_path:str, output_path:str) -> None:
+    """
+    Create sample csvs to test tramsformation functions.
+    """
+
+    df = load_raw_data(data_path)
+
+    daily_revenue = build_daily_revenue(df)
+    active_customers = build_active_customers(df)
+
+    output_path = Path(output_path)
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    daily_revenue.to_csv(output_path / 'sample_daily_revenue.csv', index=False)
+    active_customers.to_csv(output_path / 'sample_active_customers.csv', index=False)
+
+
+if __name__ == '__main__':
+
+    apply_transformations('data/raw/',
+                          'stage_05_tests/sample_data')
