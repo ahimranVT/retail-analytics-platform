@@ -1,20 +1,21 @@
 import pandas as pd
 from stage_02_transformation.build_analytics_tables import load_raw_data
 
-def build_rfm_features(df: pd.DataFrame) -> pd.DataFrame:
+def build_rfm_features(df: pd.DataFrame, snapshot_window: int) -> tuple[pd.DataFrame, pd.Timestamp]:
     """Build customer-level RFM features for churn modeling."""
 
     df = df.copy()
 
+    df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])
+
+    snapshot_date = df['InvoiceDate'].max() - pd.Timedelta(days=snapshot_window)
+
     df = df[(df["Quantity"] > 0) & 
-            (df["Price"] > 0)   
+            (df["Price"] > 0) &
+            (df['InvoiceDate'] <= snapshot_date)
             ]
 
     df['Revenue'] = df['Quantity'] * df['Price']
-
-    df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])
-
-    snapshot_date = df['InvoiceDate'].max()
 
     rfm = df.groupby('Customer ID').agg(
         last_purchase = ('InvoiceDate', 'max'),
@@ -28,4 +29,4 @@ def build_rfm_features(df: pd.DataFrame) -> pd.DataFrame:
 
     rfm = rfm.drop(columns=["last_purchase"])
 
-    return rfm
+    return (rfm, snapshot_date)

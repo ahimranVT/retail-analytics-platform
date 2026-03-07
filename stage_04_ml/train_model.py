@@ -11,13 +11,31 @@ from sklearn.model_selection import train_test_split
 
 ARTIFACT_DIR = Path("artifacts")
 ARTIFACT_DIR.mkdir(exist_ok=True)
-def create_churn_labels(rfm: pd.DataFrame) -> pd.DataFrame:
+def create_churn_labels(rfm: pd.DataFrame, raw_df: pd.DataFrame, snapshot_date: pd.Timestamp) -> pd.DataFrame:
     """
-    Label customers as churned if no purchase
-    occurred within the last 30 days.
+    Label customers as churned if they did not make a purchase
+    within 30 days of the snapshot date.
     """
+
     rfm = rfm.copy()
-    rfm['churn'] = (rfm['recency'] > 30).astype(int)
+    raw_df = raw_df.copy()
+
+    raw_df['InvoiceDate'] = pd.to_datetime(raw_df['InvoiceDate'])
+    snapshot_date = pd.to_datetime(snapshot_date)
+
+    future_transactions = raw_df[(raw_df['Quantity'] > 0) &
+                                 (raw_df['Price'] > 0) &
+                                 (raw_df['InvoiceDate'] > snapshot_date) ]
+    
+    future_window = future_transactions[
+        future_transactions['InvoiceDate'] <= snapshot_date + pd.Timedelta(days=30)
+        ]
+    
+    future_activity = future_window.groupby("Customer ID").size()
+
+    rfm["churn"] = ~rfm["Customer ID"].isin(future_activity.index)
+    rfm["churn"] = rfm["churn"].astype(int)
+
 
     return rfm
 
@@ -63,18 +81,18 @@ def save_model(model):
     model_path = ARTIFACT_DIR/'churn_model.pkl'
     joblib.dump(model, model_path)
 
-
-
 if __name__ == '__main__':
+
+    history_window_days = 90
 
     # Load raw dataset from partitions
     raw_df = load_raw_data('data/raw')
 
     # Create rfm features for loaded df
-    rfm = build_rfm_features(raw_df)
+    rfm, snapshot_date = build_rfm_features(raw_df, history_window_days)
 
     # Label customers as churned if their recency is greater than 30 days
-    labeled_df = create_churn_labels(rfm)
+    labeled_df = create_churn_labels(rfm, raw_df, snapshot_date)
 
     # Train XGBoost model on data
     model, auc = train_churn_model(labeled_df)
