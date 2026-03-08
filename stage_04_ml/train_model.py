@@ -74,12 +74,14 @@ def train_churn_model(df:pd.DataFrame) -> tuple:
 
     return model, auc 
 
-def save_model(model):
+def save_model(model, path=None):
     """
     Save the model to the artifacts directory.
     """
-    model_path = ARTIFACT_DIR/'churn_model.pkl'
-    joblib.dump(model, model_path)
+    if path is None:
+        path = ARTIFACT_DIR/'churn_model.pkl'
+
+    joblib.dump(model, path)
 
 if __name__ == '__main__':
 
