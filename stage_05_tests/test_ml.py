@@ -2,12 +2,14 @@ from stage_02_transformation.build_analytics_tables import load_raw_data
 from stage_04_ml.build_features import build_rfm_features
 from stage_04_ml.train_model import create_churn_labels, train_churn_model, save_model
 
-from pathlib import Path
+import pandas as pd
 import joblib
+
+source_filepath = 'data/sample/sample_data_raw.csv'
 
 def test_training_pipeline_runs():
 
-    raw_df = load_raw_data('data/raw')
+    raw_df = pd.read_csv(source_filepath)
     rfm, snapshot_date = build_rfm_features(raw_df, 90)
     labeled_df = create_churn_labels(rfm, raw_df, snapshot_date)
 
@@ -17,7 +19,7 @@ def test_training_pipeline_runs():
 
 def test_auc_above_random():
 
-    raw_df = load_raw_data('data/raw')
+    raw_df = pd.read_csv(source_filepath)
     rfm, snapshot_date = build_rfm_features(raw_df, 90)
     labeled_df = create_churn_labels(rfm, raw_df, snapshot_date)
 
@@ -27,7 +29,7 @@ def test_auc_above_random():
 
 def test_prediction_range():
     
-    raw_df = load_raw_data('data/raw')
+    raw_df = pd.read_csv(source_filepath)
     rfm, snapshot_date = build_rfm_features(raw_df, 90)
     labeled_df = create_churn_labels(rfm, raw_df, snapshot_date)
 
@@ -40,7 +42,7 @@ def test_prediction_range():
 
 def test_churn_labels_exist():
 
-    raw_df = load_raw_data('data/raw')
+    raw_df = pd.read_csv(source_filepath)
     rfm, snapshot_date = build_rfm_features(raw_df, 90)
     labeled_df = create_churn_labels(rfm, raw_df, snapshot_date)
 
@@ -51,7 +53,7 @@ def test_churn_labels_exist():
 
 def test_model_saves(tmp_path):
 
-    raw_df = load_raw_data('data/raw')
+    raw_df = pd.read_csv(source_filepath)
     rfm, snapshot_date = build_rfm_features(raw_df, 90)
     labeled_df = create_churn_labels(rfm, raw_df, snapshot_date)
 

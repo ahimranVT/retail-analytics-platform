@@ -1,7 +1,7 @@
 import pandas as pd
 from pathlib import Path
 
-file_path = '../data/source/transaction_data.xlsx'
+file_path = 'data/source/transaction_data.xlsx'
 
 def read_data(file_path: str) -> pd.DataFrame:
     """ Load, aggregate, and clean transaction data from Excel. """
@@ -52,5 +52,7 @@ def batch_data(df: pd.DataFrame, output_path: str) -> None:
 if __name__ == "__main__":
 
     transaction_df = read_data(file_path)
-    batch_data(df=transaction_df, output_path='../data/raw/')
+    batch_data(df=transaction_df, output_path='data/raw/')
+
+
 
