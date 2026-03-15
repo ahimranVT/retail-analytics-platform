@@ -26,8 +26,9 @@ jobs:
 
     - name: Download dataset
       run: |
-        mkdir -p data/sample
-        gdown 1qcCDp-2PkiYXWC3O43HQPPZpQkvwYOgQ-O data/source/transactions.csv
+        mkdir -p data/source
+        gdown 1qcCDp-2PkiYXWC3O43HQPPZpQkvwYOgQ
+        mv transactions.csv data/source/transactions.csv
 
     - name: Run tests
       run: pytest stage_05_tests/
