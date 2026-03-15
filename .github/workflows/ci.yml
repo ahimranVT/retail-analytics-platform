@@ -28,7 +28,7 @@ jobs:
       run: |
         mkdir -p data/source
         gdown 1qcCDp-2PkiYXWC3O43HQPPZpQkvwYOgQ
-        mv transactions.csv data/source/transactions.csv
+        mv sample_data_raw.csv data/source/transactions.csv
 
     - name: Run tests
       run: pytest stage_05_tests/
