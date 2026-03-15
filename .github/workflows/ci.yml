@@ -1,23 +1,36 @@
 name: ML Pipeline CI
+
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repo
       uses: actions/checkout@v4
+
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
         python-version: "3.10"
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-    - name: Run tests
+        pip install gdown
+
+    - name: Download dataset
       run: |
-        pytest stage_05_tests/
+        mkdir -p data/sample
+        gdown 1qcCDp-2PkiYXWC3O43HQPPZpQkvwYOgQ-O data/source/transactions.csv
+
+    - name: Run tests
+      run: pytest stage_05_tests/
+
+    - name: Run pipeline
+      run: python stage_04_ml/train_model.py

@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 from pathlib import Path
 import joblib
 
@@ -87,8 +88,10 @@ if __name__ == '__main__':
 
     history_window_days = 90
 
-    # Load raw dataset from partitions
-    raw_df = load_raw_data('data/raw')
+    # Path to transactions CSV downloaded by CI workflow at runtime
+    data_path = os.getenv('DATA_PATH', 'data/source/transactions.csv')
+
+    raw_df = pd.read_csv(data_path)
 
     # Create rfm features for loaded df
     rfm, snapshot_date = build_rfm_features(raw_df, history_window_days)
