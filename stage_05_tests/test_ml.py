@@ -5,8 +5,7 @@ from stage_04_ml.train_model import create_churn_labels, train_churn_model, save
 import pandas as pd
 import joblib
 
-source_filepath = 'data/sample/sample_data_raw.csv'
-
+source_filepath = 'data/source/transactions.csv'
 def test_training_pipeline_runs():
 
     raw_df = pd.read_csv(source_filepath)
