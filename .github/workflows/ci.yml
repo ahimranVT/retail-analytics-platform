@@ -34,4 +34,4 @@ jobs:
       run: pytest stage_05_tests/
 
     - name: Run pipeline
-      run: python stage_04_ml/train_model.py
+      run: python -m stage_04_ml.train_model
