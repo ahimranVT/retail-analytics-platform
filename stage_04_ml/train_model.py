@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 import joblib
 
-from stage_02_transformation.build_analytics_tables import load_raw_data
 from stage_04_ml.build_features import build_rfm_features
 
 from xgboost import XGBClassifier
