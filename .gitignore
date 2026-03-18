@@ -22,3 +22,6 @@ temp/
 data/source
 data/raw
 data/sample
+
+scores/
+artifacts/
