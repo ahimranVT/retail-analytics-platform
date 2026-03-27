@@ -11,6 +11,7 @@ from sklearn.model_selection import train_test_split
 
 ARTIFACT_DIR = Path("artifacts")
 ARTIFACT_DIR.mkdir(exist_ok=True)
+
 def create_churn_labels(rfm: pd.DataFrame, raw_df: pd.DataFrame, snapshot_date: pd.Timestamp) -> pd.DataFrame:
     """
     Label customers as churned if they did not make a purchase
@@ -35,7 +36,6 @@ def create_churn_labels(rfm: pd.DataFrame, raw_df: pd.DataFrame, snapshot_date: 
 
     rfm["churn"] = ~rfm["Customer ID"].isin(future_activity.index)
     rfm["churn"] = rfm["churn"].astype(int)
-
 
     return rfm
 
