@@ -5,19 +5,34 @@ scores = pd.read_csv('scores/churn_scores.csv')
 
 app = Flask(__name__)
 
+@app.route('/')
+def index():
+    return jsonify({
+        'service': 'Churn Prediction API',
+        'description': 'Serves precomputed customer churn probability scores',
+        'endpoints': {
+            '/scores': 'All customers ranked by churn probability',
+            '/scores/<customer_id>': 'Churn score for a specific customer',
+            '/scores/top/<n>': 'Top N customers most at risk',
+            '/scores/threshold/<min_prob>': 'Count and IDs of customers above a churn probability threshold'
+        }
+    })
+
 @app.route('/scores')
 def get_all_scores():
     return jsonify(scores.to_dict(orient='records'))
 
 @app.route('/scores/<int:customer_id>')
 def get_customer_score(customer_id):
-
     result = scores[scores['Customer ID'] == customer_id]
-
     if result.empty:
-        return jsonify({'error': 'Customer not found'}), 404
-    return jsonify(result.iloc[0].to_dict())
-
+        return jsonify({'error': f'Customer {customer_id} not found'}), 404
+    row = result.iloc[0]
+    return jsonify({
+        'customer_id': customer_id,
+        'churn_probability': row['churn_probability'],
+        'risk_level': 'high' if row['churn_probability'] >= 0.7 else 'medium' if row['churn_probability'] >= 0.4 else 'low'
+    })
 @app.route('/scores/top/<int:n>')
 def get_top_at_risk(n):
     return jsonify(scores.head(n).to_dict(orient='records'))
